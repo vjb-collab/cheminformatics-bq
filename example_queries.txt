@@ -1,4 +1,4 @@
-This is a collection of example queries that use the cheminformatics package to query publically available datasets. 
+This is a collection of example queries that use the cheminformatics package to query publicly available datasets. 
 
 The data we'll query is from the table: nih-nci-cbiit-chem-prod.savi.plus , which is 2.05 TB and contains 1,094,782,440 chemical compounds. 
 
