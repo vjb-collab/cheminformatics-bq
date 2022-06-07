@@ -31,6 +31,17 @@ gcloud functions add-iam-policy-binding "rdkit-pattern-fingerprint" --member=ser
 
 bq query --use_legacy_sql=false --parameter="url::${CLOUD_TRIGGER_URL}" 'CREATE FUNCTION cheminformatics.rdkit_pattern_fingerprint(smiles STRING) RETURNS STRING REMOTE WITH CONNECTION `us.cheminformatics-connection` OPTIONS (endpoint = @url)'
 
+## install rdkit-morgan-fingerprint
+
+gcloud functions deploy rdkit-morgan-fingerprint --entry-point rdkit_morgan_fingerprint --runtime python39 \
+    --trigger-http --quiet --memory=512MB --timeout=240s > /dev/null
+
+CLOUD_TRIGGER_URL=$(gcloud functions describe rdkit-morgan-fingerprint --format=json | jq -r '.httpsTrigger.url')
+
+gcloud functions add-iam-policy-binding "rdkit-morgan-fingerprint" --member=serviceAccount:${SERVICE_ACCOUNT} --role=${PERM} 
+
+bq query --use_legacy_sql=false --parameter="url::${CLOUD_TRIGGER_URL}" 'CREATE FUNCTION cheminformatics.rdkit_morgan_fingerprint(smiles STRING) RETURNS STRING REMOTE WITH CONNECTION `us.cheminformatics-connection` OPTIONS (endpoint = @url)'
+
 ## install rdkit-draw-svg
 
 gcloud functions deploy rdkit-draw-svg --entry-point rdkit_draw_svg --runtime python39 \

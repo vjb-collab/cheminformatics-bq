@@ -10,7 +10,7 @@ def rdkit_pattern_fingerprint(request):
         for call in calls:     
             smiles = call[0]  
             try:
-                fp = Chem.RDKFingerprint(Chem.MolFromSmiles(smiles))
+                fp = Chem.PatternFingerprint(Chem.MolFromSmiles(smiles), tautomerFingerprints=True )
                 return_value.append(fp.ToBase64())
             except:
                 return_value.append("")
@@ -19,6 +19,28 @@ def rdkit_pattern_fingerprint(request):
         return return_json
     except Exception:
         return json.dumps( { "errorMessage": 'something unexpected in input' } ), 400
+
+
+def rdkit_morgan_fingerprint(request):
+    from rdkit.Chem import rdMolDescriptors
+    try:
+        return_value = []
+        request_json = request.get_json()
+        calls = request_json['calls']
+        
+        for call in calls:     
+            smiles = call[0]  
+            try:
+                fp = rdMolDescriptors.GetMorganFingerprintAsBitVect(Chem.MolFromSmiles(smiles), 2)
+                return_value.append(fp.ToBase64())
+            except:
+                return_value.append("")
+
+        return_json = json.dumps( { "replies" :  return_value} ), 200
+        return return_json
+    except Exception:
+        return json.dumps( { "errorMessage": 'something unexpected in input' } ), 400
+
 
 def rdkit_draw_svg(request):
     from rdkit.Chem.Draw import rdMolDraw2D
@@ -110,7 +132,7 @@ def rdkit_descriptor_generic(request):
         return json.dumps( { "errorMessage": 'something unexpected in input' } ), 400
 
 def rdkit_qed(request):
-    from qed import qed
+    from rdkit.Chem import QED
     try:
         return_value = []
         request_json = request.get_json()
@@ -119,7 +141,7 @@ def rdkit_qed(request):
             smiles = call[0]  
             try:
                 mol = Chem.MolFromSmiles(smiles)
-                return_value.append(str(qed.default(mol)))
+                return_value.append(str(QED.qed(mol)))
             except:
                 return_value.append("")
 
