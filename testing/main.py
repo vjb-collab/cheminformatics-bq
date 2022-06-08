@@ -2,6 +2,7 @@ import json
 from rdkit import Chem
 
 def rdkit_pattern_fingerprint_test(request):
+    from rdkit.Chem import DataStructs
     try:
         return_value = []
         request_json = request.get_json()
@@ -10,8 +11,9 @@ def rdkit_pattern_fingerprint_test(request):
         for call in calls:     
             smiles = call[0]  
             try:
-                fp = Chem.PatternFingerprint(Chem.MolFromSmiles(smiles), tautomerFingerprints=True )
-                return_value.append(fp.ToBinary())
+                fp = Chem.PatternFingerprint(Chem.MolFromSmiles(smiles), tautomerFingerprints=True)
+                b = DataStructs.BitVectToBinaryText(fp)
+                return_value.append(b.hex())
             except:
                 return_value.append("")
 

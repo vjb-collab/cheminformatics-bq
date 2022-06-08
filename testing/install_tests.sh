@@ -27,13 +27,13 @@ PERM="roles/cloudfunctions.invoker"
 ## install rdkit-pattern-fingerprint-test
 
 gcloud beta functions deploy rdkit-pattern-fingerprint-test --gen2 --region "us-east1" --entry-point rdkit_pattern_fingerprint_test --runtime python39 \
-    --trigger-http --quiet --memory=512MB --timeout=240s  > /dev/null
+    --trigger-http --quiet --memory=512MB --timeout=240s --max-instances=9000  > /dev/null
 
 CLOUD_TRIGGER_URL=$(gcloud beta functions describe rdkit-pattern-fingerprint-test --gen2 --region "us-east1" --format=json | jq -r '.serviceConfig.uri')
 
 gcloud beta functions add-iam-policy-binding "rdkit-pattern-fingerprint-test" --region "us-east1" --member=serviceAccount:${SERVICE_ACCOUNT} --role=${PERM} --gen2
 
-bq query --use_legacy_sql=false --parameter="url::${CLOUD_TRIGGER_URL}" 'CREATE FUNCTION cheminformatics_test.rdkit_pattern_fingerprint_test(smiles STRING) RETURNS BYTES REMOTE WITH CONNECTION `us.cheminformatics-connection-test` OPTIONS (endpoint = @url)'
+bq query --use_legacy_sql=false --parameter="url::${CLOUD_TRIGGER_URL}" 'CREATE FUNCTION cheminformatics_test.rdkit_pattern_fingerprint_test(smiles STRING) RETURNS STRING REMOTE WITH CONNECTION `us.cheminformatics-connection-test` OPTIONS (endpoint = @url)'
 
 ## wait one minute for permissions to propagate
 echo "Waiting for permissions to propagate ..."

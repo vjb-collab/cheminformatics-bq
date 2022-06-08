@@ -1,0 +1,11 @@
+declare smiles_string STRING;
+declare x BYTES;
+declare bit_count_x INT64;
+
+set smiles_string="CC(C)CN([S](=O)(=O)C1=CC=C(C=C1)[S](=O)(=O)Cl)[S](C2=C(C=CC(=C2)C)OCCC(=O)O)(=O)=O";
+set x = FROM_HEX(`cheminformatics_test.rdkit_pattern_fingerprint_test`(smiles_string));
+set bit_count_x = bit_count(x);
+
+SELECT product_smiles, pattern_fp FROM `life-sciences-333615.chemical_compounds.savi_fp_cleaned`
+where 
+bit_count( x & pattern_fp) = bit_count_x
