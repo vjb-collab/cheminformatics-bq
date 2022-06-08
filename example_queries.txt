@@ -11,18 +11,9 @@ create or replace table `life-sciences-333615.chemistry.savi_fingerprint_all` as
 (
 SELECT product_smiles,
 `cheminformatics.rdkit_pattern_fingerprint`(product_smiles) as pattern_fingerprint,
-from `nih-nci-cbiit-chem-prod.savi.plus` TABLESAMPLE SYSTEM (100 percent)
+from `nih-nci-cbiit-chem-prod.savi.plus` 
 )
 
-Fingperint 1% of SAVI:
-----------------------
-
-create or replace table `life-sciences-333615.chemistry.savi_fingerprint_1_percent` as
-(
-SELECT product_smiles,
-`cheminformatics.rdkit_pattern_fingerprint`(product_smiles) as pattern_fingerprint,
-from `nih-nci-cbiit-chem-prod.savi.plus` TABLESAMPLE SYSTEM (1 percent)
-)
 
 Fingerprint and Generate Molecular Descriptors for all of SAVI:
 ---------------------------------------------------------------
@@ -38,5 +29,5 @@ SELECT product_smiles,
 `cheminformatics.rdkit_descriptor_exact_mol_wt`(product_smiles) as mol_wt,
 `cheminformatics.rdkit_descriptor_fraction_csp3`(product_smiles) as fraction_csp3,
 `cheminformatics.rdkit_descriptor_mol_log_p`(product_smiles) as mol_log_p,
-from `nih-nci-cbiit-chem-prod.savi.plus` TABLESAMPLE SYSTEM (100 percent)
+from `nih-nci-cbiit-chem-prod.savi.plus` 
 )
