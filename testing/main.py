@@ -11,7 +11,7 @@ def rdkit_pattern_fingerprint_test(request):
             smiles = call[0]  
             try:
                 fp = Chem.PatternFingerprint(Chem.MolFromSmiles(smiles), tautomerFingerprints=True )
-                return_value.append(fp.ToBase64())
+                return_value.append(fp.ToBinary())
             except:
                 return_value.append("")
 
