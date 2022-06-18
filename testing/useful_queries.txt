@@ -1,0 +1,19 @@
+# create a sample dataset from SAVI
+
+create or replace table `sample_data.smiles` as
+(
+SELECT product_smiles as smiles,
+from `nih-nci-cbiit-chem-prod.savi.plus` TABLESAMPLE SYSTEM (1 percent)
+where rand() < 0.1
+)
+
+# run an inline substructure substructure_search
+
+SELECT `life-sciences-333615.cheminformatics_test.rdkit_substructure_match`("CCCC", "CCCCC");
+
+# run an inline pattern fingerprint call
+
+SELECT `life-sciences-333615.cheminformatics_test.rdkit_pattern_fingerprint_test`("CCCCCN");
+
+
+

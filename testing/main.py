@@ -36,7 +36,7 @@ def rdkit_pattern_fingerprint_test(request):
 
                 fingerprints = {}
 
-                fingerprints["fp_pattern_short_as_binary_hex"] = fp_pattern_short_as_binary_hex
+                #fingerprints["fp_pattern_short_as_binary_hex"] = fp_pattern_short_as_binary_hex
                 fingerprints["fp_pattern_long_as_binary_hex"] = fp_pattern_long_as_binary_hex
                 fingerprints["fp_morgan_as_binary_hex"] = fp_morgan_as_binary_hex
 
@@ -107,3 +107,35 @@ def rdkit_substructure_match(request):
     except Exception:
         return json.dumps( { "errorMessage": 'something unexpected in input' } ), 400
 
+def rdkit_molecular_descriptors(request):
+    try:
+        return_value = []
+        request_json = request.get_json()
+        calls = request_json['calls']
+        
+        for call in calls:     
+            
+            smiles = call[0]  
+            
+            try:
+                
+                mol = Chem.MolFromSmiles(smiles)
+                
+                descriptor_list = ["ExactMolWt", "FractionCSP3", "NumAliphaticRings", "BalabanJ", "BertzCT", 'HallKierAlpha','HeavyAtomCount','HeavyAtomMolWt', 'MaxAbsPartialCharge',  'MaxPartialCharge', 'MolLogP', 'MolMR', 'MolWt','NHOHCount','NOCount','NumAliphaticCarbocycles','NumAliphaticHeterocycles','NumAliphaticRings','NumAromaticCarbocycles','NumAromaticHeterocycles','NumAromaticRings','NumHAcceptors','NumHDonors','NumHeteroatoms','NumRadicalElectrons','NumRotatableBonds','NumSaturatedCarbocycles','NumSaturatedHeterocycles','NumSaturatedRings','NumValenceElectrons']
+                
+                data = {}
+                
+                for descriptor_name in descriptor_list:
+                    data[descriptor_name] = getattr(Descriptors, descriptor_name)(mol)
+                
+                molecular_descriptors_as_json_string = json.dumps(data)
+                
+                return_value.append(molecular_descriptors_as_json_string)
+            
+            except:
+                return_value.append("")
+
+        return_json = json.dumps( { "replies" :  return_value} ), 200
+        return return_json
+    except Exception:
+        return json.dumps( { "errorMessage": 'something unexpected in input' } ), 400
