@@ -1,6 +1,7 @@
 from rdkit import Chem
 from rdkit.Chem import DataStructs
 from rdkit.Chem import rdMolDescriptors
+from rdkit.Chem import Descriptors
 from rdkit.Chem import rdqueries
 import json
 
@@ -15,21 +16,23 @@ def rdkit_pattern_fingerprint_test(request):
             smiles = call[0]  
             
             try:
+                
                 mol = Chem.MolFromSmiles(smiles)
-                fp_pattern_short = Chem.PatternFingerprint(mol, 11, tautomerFingerprints=True)
-                fp_pattern_short_as_binary = DataStructs.BitVectToBinaryText(fp_pattern_short)
-                fp_pattern_short_as_binary_hex = fp_pattern_short_as_binary.hex()
-                fp_pattern_short_as_int = int(fp_pattern_short.ToBitString(),2)
+                
+                #fp_pattern_short = Chem.PatternFingerprint(mol, 11, tautomerFingerprints=True)
+                #fp_pattern_short_as_binary = DataStructs.BitVectToBinaryText(fp_pattern_short)
+                #fp_pattern_short_as_binary_hex = fp_pattern_short_as_binary.hex()
+                #fp_pattern_short_as_int = int(fp_pattern_short.ToBitString(),2)
 
                 fp_pattern_long = Chem.PatternFingerprint(mol, tautomerFingerprints=True)
                 fp_pattern_long_as_binary = DataStructs.BitVectToBinaryText(fp_pattern_long)
                 fp_pattern_long_as_binary_hex = fp_pattern_long_as_binary.hex()
-                fp_pattern_long_as_int = int(fp_pattern_long.ToBitString(),2)
+                #fp_pattern_long_as_int = int(fp_pattern_long.ToBitString(),2)
 
                 fp_morgan = rdMolDescriptors.GetMorganFingerprintAsBitVect(mol, radius = 2, useChirality=True, nBits = 2048)
                 fp_morgan_as_binary = DataStructs.BitVectToBinaryText(fp_morgan)
                 fp_morgan_as_binary_hex = fp_morgan_as_binary.hex()
-                fp_morgan_as_int = int(fp_morgan.ToBitString(),2)
+                #fp_morgan_as_int = int(fp_morgan.ToBitString(),2)
 
                 fingerprints = {}
 
@@ -37,9 +40,9 @@ def rdkit_pattern_fingerprint_test(request):
                 fingerprints["fp_pattern_long_as_binary_hex"] = fp_pattern_long_as_binary_hex
                 fingerprints["fp_morgan_as_binary_hex"] = fp_morgan_as_binary_hex
 
-                fingerprints["fp_pattern_short_as_int"]= fp_pattern_short_as_int
-                fingerprints["fp_pattern_long_as_int"] = fp_pattern_long_as_int
-                fingerprints["fp_morgan_as_int"] = fp_morgan_as_int
+                #fingerprints["fp_pattern_short_as_int"]= fp_pattern_short_as_int
+                #fingerprints["fp_pattern_long_as_int"] = fp_pattern_long_as_int
+                #fingerprints["fp_morgan_as_int"] = fp_morgan_as_int
 
                 # count carbons
                 q = rdqueries.AtomNumEqualsQueryAtom(6)
@@ -67,8 +70,8 @@ def rdkit_pattern_fingerprint_test(request):
                 fingerprints["num_fluorine"] = num_fluorine
                 fingerprints["num_sulfur"] = num_sulfur
 
-
                 fingerprints_as_json_string = json.dumps(fingerprints)
+                
                 return_value.append(fingerprints_as_json_string)
             
             except:
@@ -79,4 +82,28 @@ def rdkit_pattern_fingerprint_test(request):
     except Exception:
         return json.dumps( { "errorMessage": 'something unexpected in input' } ), 400
 
+
+def rdkit_substructure_match(request):
+    try:
+        return_value = []
+        request_json = request.get_json()
+        calls = request_json['calls']
+        
+        for call in calls:     
+            
+            fragment_smiles = call[0]
+            smiles = call[1]  
+                        
+            try:
+                mol = Chem.MolFromSmiles(smiles)
+                fragment_mol = Chem.MolFromSmiles(fragment_smiles)
+                return_value.append(mol.HasSubstructMatch(fragment_mol, useChirality=True))
+            
+            except:
+                return_value.append("")
+
+        return_json = json.dumps( { "replies" :  return_value} ), 200
+        return return_json
+    except Exception:
+        return json.dumps( { "errorMessage": 'something unexpected in input' } ), 400
 
