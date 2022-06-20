@@ -1,17 +1,69 @@
-import json
 from rdkit import Chem
+from rdkit.Chem import DataStructs
+from rdkit.Chem import rdMolDescriptors
+from rdkit.Chem import Descriptors
+from rdkit.Chem import rdqueries
+import json
 
-def rdkit_pattern_fingerprint(request):
+def rdkit_fingerprint(request):
     try:
         return_value = []
         request_json = request.get_json()
         calls = request_json['calls']
         
         for call in calls:     
+            
             smiles = call[0]  
+            
             try:
-                fp = Chem.PatternFingerprint(Chem.MolFromSmiles(smiles), tautomerFingerprints=True )
-                return_value.append(fp.ToBase64())
+                
+                mol = Chem.MolFromSmiles(smiles)
+                
+                fp_pattern_long = Chem.PatternFingerprint(mol, tautomerFingerprints=True)
+                fp_pattern_long_as_binary = DataStructs.BitVectToBinaryText(fp_pattern_long)
+                fp_pattern_long_as_binary_hex = fp_pattern_long_as_binary.hex()
+               
+
+                fp_morgan = rdMolDescriptors.GetMorganFingerprintAsBitVect(mol, radius = 2, useChirality=True, nBits = 2048)
+                fp_morgan_as_binary = DataStructs.BitVectToBinaryText(fp_morgan)
+                fp_morgan_as_binary_hex = fp_morgan_as_binary.hex()
+                
+
+                fingerprints = {}
+
+                fingerprints["fp_pattern_long_as_binary_hex"] = fp_pattern_long_as_binary_hex
+                fingerprints["fp_morgan_as_binary_hex"] = fp_morgan_as_binary_hex
+
+                # count carbons
+                q = rdqueries.AtomNumEqualsQueryAtom(6)
+                num_carbon = len(mol.GetAtomsMatchingQuery(q))
+
+                # count nitrogens
+                q = rdqueries.AtomNumEqualsQueryAtom(7)
+                num_nitrogen = len(mol.GetAtomsMatchingQuery(q))
+
+                # count oxygens
+                q = rdqueries.AtomNumEqualsQueryAtom(8)
+                num_oxygen = len(mol.GetAtomsMatchingQuery(q))
+
+                # count fluorines
+                q = rdqueries.AtomNumEqualsQueryAtom(9)
+                num_fluorine = len(mol.GetAtomsMatchingQuery(q))
+
+                # count sulfurs
+                q = rdqueries.AtomNumEqualsQueryAtom(16)
+                num_sulfur = len(mol.GetAtomsMatchingQuery(q))
+
+                fingerprints["num_carbon"] = num_carbon
+                fingerprints["num_nitrogen"] = num_nitrogen
+                fingerprints["num_oxygen"] = num_oxygen
+                fingerprints["num_fluorine"] = num_fluorine
+                fingerprints["num_sulfur"] = num_sulfur
+
+                fingerprints_as_json_string = json.dumps(fingerprints)
+                
+                return_value.append(fingerprints_as_json_string)
+            
             except:
                 return_value.append("")
 
@@ -21,18 +73,22 @@ def rdkit_pattern_fingerprint(request):
         return json.dumps( { "errorMessage": 'something unexpected in input' } ), 400
 
 
-def rdkit_morgan_fingerprint(request):
-    from rdkit.Chem import rdMolDescriptors
+def rdkit_substructure_match(request):
     try:
         return_value = []
         request_json = request.get_json()
         calls = request_json['calls']
         
         for call in calls:     
-            smiles = call[0]  
+            
+            fragment_smiles = call[0]
+            smiles = call[1]  
+                        
             try:
-                fp = rdMolDescriptors.GetMorganFingerprintAsBitVect(Chem.MolFromSmiles(smiles), 2)
-                return_value.append(fp.ToBase64())
+                mol = Chem.MolFromSmiles(smiles)
+                fragment_mol = Chem.MolFromSmiles(fragment_smiles)
+                return_value.append(mol.HasSubstructMatch(fragment_mol, useChirality=True))
+            
             except:
                 return_value.append("")
 
@@ -41,6 +97,38 @@ def rdkit_morgan_fingerprint(request):
     except Exception:
         return json.dumps( { "errorMessage": 'something unexpected in input' } ), 400
 
+def rdkit_molecular_descriptors(request):
+    try:
+        return_value = []
+        request_json = request.get_json()
+        calls = request_json['calls']
+        
+        for call in calls:     
+            
+            smiles = call[0]  
+            
+            try:
+                
+                mol = Chem.MolFromSmiles(smiles)
+                
+                descriptor_list = ["ExactMolWt", "FractionCSP3", "NumAliphaticRings", "BalabanJ", "BertzCT", 'HallKierAlpha','HeavyAtomCount','HeavyAtomMolWt', 'MaxAbsPartialCharge',  'MaxPartialCharge', 'MolLogP', 'MolMR', 'MolWt','NHOHCount','NOCount','NumAliphaticCarbocycles','NumAliphaticHeterocycles','NumAliphaticRings','NumAromaticCarbocycles','NumAromaticHeterocycles','NumAromaticRings','NumHAcceptors','NumHDonors','NumHeteroatoms','NumRadicalElectrons','NumRotatableBonds','NumSaturatedCarbocycles','NumSaturatedHeterocycles','NumSaturatedRings','NumValenceElectrons']
+                
+                data = {}
+                
+                for descriptor_name in descriptor_list:
+                    data[descriptor_name] = getattr(Descriptors, descriptor_name)(mol)
+                
+                molecular_descriptors_as_json_string = json.dumps(data)
+                
+                return_value.append(molecular_descriptors_as_json_string)
+            
+            except:
+                return_value.append("")
+
+        return_json = json.dumps( { "replies" :  return_value} ), 200
+        return return_json
+    except Exception:
+        return json.dumps( { "errorMessage": 'something unexpected in input' } ), 400
 
 def rdkit_draw_svg(request):
     from rdkit.Chem.Draw import rdMolDraw2D
@@ -69,27 +157,6 @@ def rdkit_draw_svg(request):
     except Exception:
         return json.dumps( { "errorMessage": 'something unexpected in input' } ), 400
 
-def rdkit_generate_MACCS_keys(request):
-    from rdkit.Chem import MACCSkeys
-    try:
-        return_value = []
-        request_json = request.get_json()
-        calls = request_json['calls']
-        
-        for call in calls:       
-            smiles = call[0]            
-            try:
-                mol = Chem.MolFromSmiles(smiles)
-                fp = MACCSkeys.GenMACCSKeys(mol)
-                return_value.append(fp.ToBase64())
-            except:
-                return_value.append("")
-
-        return_json = json.dumps( { "replies" :  return_value} ), 200
-        return return_json
-    except Exception:
-        return json.dumps( { "errorMessage": 'something unexpected in input' } ), 400
-
 def rdkit_smiles_to_inchi(request):
     try:
         return_value = []
@@ -101,28 +168,6 @@ def rdkit_smiles_to_inchi(request):
             try:
                 mol = Chem.MolFromSmiles(smiles)
                 return_value.append(Chem.MolToInchi(mol))
-            except:
-                return_value.append("")
-
-        return_json = json.dumps( { "replies" :  return_value} ), 200
-        return return_json
-    except Exception:
-        return json.dumps( { "errorMessage": 'something unexpected in input' } ), 400
-
-def rdkit_descriptor_generic(request):
-    from rdkit.Chem import Descriptors
-    try:
-        return_value = []
-        request_json = request.get_json()
-        calls = request_json['calls']
-        rdkit_func = request_json["userDefinedContext"]["rdkit-function"]
-        #print(rdkit_func)
-        for call in calls:     
-            smiles = call[0]  
-            try:
-                mol = Chem.MolFromSmiles(smiles)
-                #print(getattr(Descriptors, rdkit_func)(mol))
-                return_value.append(str(getattr(Descriptors, rdkit_func)(mol)))
             except:
                 return_value.append("")
 
@@ -149,3 +194,4 @@ def rdkit_qed(request):
         return return_json
     except Exception:
         return json.dumps( { "errorMessage": 'something unexpected in input' } ), 400
+
