@@ -2,7 +2,15 @@
 
 To install the cheminformatics package, open a cloud shell in the context of a project. 
 
-Then run **install_cheminformatics.sh**
+Enable the following APIs
+
+- gcloud services enable bigqueryconnection.googleapis.com
+- gcloud services enable cloudfunctions.googleapis.com
+- gcloud services enable run.googleapis.com
+- gcloud services enable artifactregistry.googleapis.com
+- gcloud services enable cloudbuild.googleapis.com
+
+As Project Admin, run **install_cheminformatics.sh**
 
 This will:
 
