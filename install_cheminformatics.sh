@@ -31,7 +31,7 @@ cd rdkit
 ## install rdkit-fingerprint
 
 gcloud beta functions deploy rdkit-fingerprint --gen2 --region "us-east1" --entry-point rdkit_fingerprint --runtime python39 \
-    --trigger-http --quiet --memory=512MB --timeout=240s --max-instances=9000  > /dev/null
+    --trigger-http --quiet --memory=512MB --timeout=240s --max-instances=100  > /dev/null
 
 CLOUD_TRIGGER_URL=$(gcloud beta functions describe rdkit-fingerprint --gen2 --region "us-east1" --format=json | jq -r '.serviceConfig.uri')
 
@@ -42,7 +42,7 @@ bq query --use_legacy_sql=false --parameter="url::${CLOUD_TRIGGER_URL}" 'CREATE 
 ## install rdkit-substructure-match
 
 gcloud beta functions deploy rdkit-substructure-match --gen2 --region "us-east1" --entry-point rdkit_substructure_match --runtime python39 \
-    --trigger-http --quiet --memory=512MB --timeout=240s --max-instances=9000  > /dev/null
+    --trigger-http --quiet --memory=512MB --timeout=240s --max-instances=100  > /dev/null
 
 CLOUD_TRIGGER_URL=$(gcloud beta functions describe rdkit-substructure-match --gen2 --region "us-east1" --format=json | jq -r '.serviceConfig.uri')
 
@@ -53,7 +53,7 @@ bq query --use_legacy_sql=false --parameter="url::${CLOUD_TRIGGER_URL}" 'CREATE 
 ## install rdkit-molecular-descriptors
 
 gcloud beta functions deploy rdkit-molecular-descriptors --gen2 --region "us-east1" --entry-point rdkit_molecular_descriptors --runtime python39 \
-    --trigger-http --quiet --memory=512MB --timeout=240s --max-instances=9000  > /dev/null
+    --trigger-http --quiet --memory=512MB --timeout=240s --max-instances=100  > /dev/null
 
 CLOUD_TRIGGER_URL=$(gcloud beta functions describe rdkit-molecular-descriptors --gen2 --region "us-east1" --format=json | jq -r '.serviceConfig.uri')
 
@@ -64,7 +64,7 @@ bq query --use_legacy_sql=false --parameter="url::${CLOUD_TRIGGER_URL}" 'CREATE 
 ## install rdkit-draw-svg
 
 gcloud beta functions deploy rdkit-draw-svg --gen2 --region "us-east1" --entry-point rdkit_draw_svg --runtime python39 \
-    --trigger-http --quiet --memory=512MB --timeout=240s --max-instances=9000  > /dev/null
+    --trigger-http --quiet --memory=512MB --timeout=240s --max-instances=100  > /dev/null
 
 CLOUD_TRIGGER_URL=$(gcloud beta functions describe rdkit-draw-svg --gen2 --region "us-east1" --format=json | jq -r '.serviceConfig.uri')
 
@@ -75,7 +75,7 @@ bq query --use_legacy_sql=false --parameter="url::${CLOUD_TRIGGER_URL}" 'CREATE 
 ## install rdkit-smiles-to-inchi
 
 gcloud beta functions deploy rdkit-smiles-to-inchi --gen2 --region "us-east1" --entry-point rdkit_smiles_to_inchi --runtime python39 \
-    --trigger-http --quiet --memory=512MB --timeout=240s --max-instances=9000  > /dev/null
+    --trigger-http --quiet --memory=512MB --timeout=240s --max-instances=100  > /dev/null
 
 CLOUD_TRIGGER_URL=$(gcloud beta functions describe rdkit-smiles-to-inchi --gen2 --region "us-east1" --format=json | jq -r '.serviceConfig.uri')
 
@@ -86,7 +86,7 @@ bq query --use_legacy_sql=false --parameter="url::${CLOUD_TRIGGER_URL}" 'CREATE 
 ## install rdkit-qed
 
 gcloud beta functions deploy rdkit-qed --gen2 --region "us-east1" --entry-point rdkit_qed --runtime python39 \
-    --trigger-http --quiet --memory=512MB --timeout=240s --max-instances=9000  > /dev/null
+    --trigger-http --quiet --memory=512MB --timeout=240s --max-instances=100  > /dev/null
 
 CLOUD_TRIGGER_URL=$(gcloud beta functions describe rdkit-qed --gen2 --region "us-east1" --format=json | jq -r '.serviceConfig.uri')
 
@@ -101,7 +101,7 @@ cd ../biopython/
 
 ## install biopython-sequence-complement
 
-gcloud beta functions deploy biopython-sequence-complement --gen2 --region "us-east1" --entry-point biopython_sequence_complement --runtime python39 --trigger-http --quiet --memory=512MB --timeout=240s --max-instances=9000 > /dev/null
+gcloud beta functions deploy biopython-sequence-complement --gen2 --region "us-east1" --entry-point biopython_sequence_complement --runtime python39 --trigger-http --quiet --memory=512MB --timeout=240s --max-instances=100 > /dev/null
 
 CLOUD_TRIGGER_URL=$(gcloud beta functions describe biopython-sequence-complement --gen2 --region "us-east1" --format=json | jq -r '.serviceConfig.uri')
 
