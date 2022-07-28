@@ -10,7 +10,13 @@ Enable the following APIs
 - gcloud services enable artifactregistry.googleapis.com
 - gcloud services enable cloudbuild.googleapis.com
 
-As Project Admin, run **install_cheminformatics.sh**
+Installing the package requires the following permissions:
+
+- BigQuery Admin
+- Cloud Functions Admin
+- Service Account User
+
+As a user with above permissions, run **install_cheminformatics.sh**
 
 This will:
 
@@ -21,3 +27,8 @@ This will:
 - assign IAM permissions for the connection service account to invoke each cloud function
 - create the BQ functions  
 
+Using the package requires the following permissions:
+
+- BigQuery User
+- BigQuery Connection User
+- BigQuery Metadata Viewer
