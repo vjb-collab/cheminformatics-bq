@@ -1,5 +1,7 @@
 # cheminformatics-bq
 
+Note: This is not an official Google product.
+
 To install the cheminformatics package, open a cloud shell in the context of a project. 
 
 Enable the following APIs
