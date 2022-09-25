@@ -167,7 +167,7 @@ gcloud beta functions add-iam-policy-binding "biopython-sequence-complement" --g
 
 gcloud run services add-iam-policy-binding "biopython-sequence-complement" --region "us-east1" --member=serviceAccount:${SERVICE_ACCOUNT} --role="roles/run.invoker"
 
-bq query --use_legacy_sql=false --parameter="url::${CLOUD_TRIGGER_URL}" 'CREATE FUNCTION cheminformatics.biopython_sequence_complement(sequence STRING) RETURNS STRING REMOTE WITH CONNECTION `us.cheminformatics-connection` OPTIONS (endpoint = @url, max_batching_rows=2500)'
+bq query --use_legacy_sql=false --parameter="url::${CLOUD_TRIGGER_URL}" 'CREATE or REPLACE FUNCTION cheminformatics.biopython_sequence_complement(sequence STRING) RETURNS STRING REMOTE WITH CONNECTION `us.cheminformatics-connection` OPTIONS (endpoint = @url, max_batching_rows=2500)'
 
 ## install biopython-sequence-translate
 
@@ -182,7 +182,7 @@ gcloud beta functions add-iam-policy-binding "biopython-sequence-translate" --ge
 
 gcloud run services add-iam-policy-binding "biopython-sequence-translate" --region "us-east1" --member=serviceAccount:${SERVICE_ACCOUNT} --role="roles/run.invoker"
 
-bq query --use_legacy_sql=false --parameter="url::${CLOUD_TRIGGER_URL}" 'CREATE FUNCTION cheminformatics.biopython_sequence_translate(sequence STRING) RETURNS STRING REMOTE WITH CONNECTION `us.cheminformatics-connection` OPTIONS (endpoint = @url, max_batching_rows=2500)'
+bq query --use_legacy_sql=false --parameter="url::${CLOUD_TRIGGER_URL}" 'CREATE or REPLACE FUNCTION cheminformatics.biopython_sequence_translate(sequence STRING) RETURNS STRING REMOTE WITH CONNECTION `us.cheminformatics-connection` OPTIONS (endpoint = @url, max_batching_rows=2500)'
 
 ## install biopython-sequence-translate-to-stop
 
@@ -198,7 +198,7 @@ gcloud beta functions add-iam-policy-binding "biopython-sequence-translate-to-st
 
 gcloud run services add-iam-policy-binding "biopython-sequence-translate-to-stop" --region "us-east1" --member=serviceAccount:${SERVICE_ACCOUNT} --role="roles/run.invoker"
 
-bq query --use_legacy_sql=false --parameter="url::${CLOUD_TRIGGER_URL}" 'CREATE FUNCTION cheminformatics.biopython_sequence_translate_to_stop(sequence STRING) RETURNS STRING REMOTE WITH CONNECTION `us.cheminformatics-connection` OPTIONS (endpoint = @url, max_batching_rows=2500)'
+bq query --use_legacy_sql=false --parameter="url::${CLOUD_TRIGGER_URL}" 'CREATE or REPLACE FUNCTION cheminformatics.biopython_sequence_translate_to_stop(sequence STRING) RETURNS STRING REMOTE WITH CONNECTION `us.cheminformatics-connection` OPTIONS (endpoint = @url, max_batching_rows=2500)'
 
 cd ..
 
