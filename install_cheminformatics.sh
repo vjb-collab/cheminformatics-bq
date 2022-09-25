@@ -59,6 +59,21 @@ gcloud run services add-iam-policy-binding "rdkit-fingerprint" --region "us-east
 
 bq query --use_legacy_sql=false --parameter="url::${CLOUD_TRIGGER_URL}" 'CREATE or REPLACE FUNCTION cheminformatics.rdkit_fingerprint(smiles STRING) RETURNS STRING REMOTE WITH CONNECTION `us.cheminformatics-connection` OPTIONS (endpoint = @url, max_batching_rows = 2500)'
 
+## install rdkit-fingerprint-1024-int64
+
+gcloud beta functions deploy rdkit-fingerprint-1024-int64 \
+     --quiet --gen2 --region "us-east1" --entry-point rdkit_fingerprint_1024_int64 --runtime python39 --trigger-http \
+     --memory=$MEMORY --timeout=$TIMEOUT --max-instances=$MAX_INSTANCES  \
+     --update-labels package=cheminformatics --update-labels function_type=remote_function --update-labels software_package=rdkit
+
+CLOUD_TRIGGER_URL=$(gcloud beta functions describe rdkit-fingerprint-1024-int64 --gen2 --region "us-east1" --format=json | jq -r '.serviceConfig.uri')
+
+gcloud beta functions add-iam-policy-binding "rdkit-fingerprint-1024-int64" --region "us-east1" --member=serviceAccount:${SERVICE_ACCOUNT} --role=${PERM} --gen2
+
+gcloud run services add-iam-policy-binding "rdkit-fingerprint-1024-int64" --region "us-east1" --member=serviceAccount:${SERVICE_ACCOUNT} --role="roles/run.invoker"
+
+bq query --use_legacy_sql=false --parameter="url::${CLOUD_TRIGGER_URL}" 'CREATE or REPLACE FUNCTION cheminformatics.rdkit_fingerprint_1024_int64(smiles STRING) RETURNS STRING REMOTE WITH CONNECTION `us.cheminformatics-connection` OPTIONS (endpoint = @url, max_batching_rows = 2500)'
+
 ## install rdkit-substructure-match
 
 gcloud beta functions deploy rdkit-substructure-match \
