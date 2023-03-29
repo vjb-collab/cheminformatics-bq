@@ -38,7 +38,7 @@ PERM="roles/cloudfunctions.invoker"
 
 TIMEOUT=600s
 MEMORY=512MB
-MAX_INSTANCES=100
+MAX_INSTANCES=1000
 
 ## start installation by folder
 
