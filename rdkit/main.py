@@ -181,7 +181,7 @@ def rdkit_molecular_descriptors(request):
                 
                 mol = Chem.MolFromSmiles(smiles)
                 
-                descriptor_list = ["ExactMolWt", "FractionCSP3", "NumAliphaticRings", "BalabanJ", "BertzCT", 'HallKierAlpha','HeavyAtomCount','HeavyAtomMolWt', 'MaxAbsPartialCharge',  'MaxPartialCharge', 'MolLogP', 'MolMR', 'MolWt','NHOHCount','NOCount','NumAliphaticCarbocycles','NumAliphaticHeterocycles','NumAliphaticRings','NumAromaticCarbocycles','NumAromaticHeterocycles','NumAromaticRings','NumHAcceptors','NumHDonors','NumHeteroatoms','NumRadicalElectrons','NumRotatableBonds','NumSaturatedCarbocycles','NumSaturatedHeterocycles','NumSaturatedRings','NumValenceElectrons']
+                descriptor_list = ["ExactMolWt", "FractionCSP3", "BalabanJ", "BertzCT", 'HallKierAlpha','HeavyAtomCount','HeavyAtomMolWt', 'MaxAbsPartialCharge',  'MaxPartialCharge', 'MolLogP', 'MolMR', 'MolWt','NHOHCount','NOCount','NumAliphaticCarbocycles','NumAliphaticHeterocycles','NumAliphaticRings','NumAromaticCarbocycles','NumAromaticHeterocycles','NumAromaticRings','NumHAcceptors','NumHDonors','NumHeteroatoms','NumRadicalElectrons','NumRotatableBonds','NumSaturatedCarbocycles','NumSaturatedHeterocycles','NumSaturatedRings','NumValenceElectrons']
                 
                 data = {}
                 
