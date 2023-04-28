@@ -6,6 +6,7 @@ To install the cheminformatics package, open a cloud shell in the context of a p
 
 Enable the following APIs
 
+- gcloud services enable bigquery.googleapis.com
 - gcloud services enable bigqueryconnection.googleapis.com
 - gcloud services enable cloudfunctions.googleapis.com
 - gcloud services enable run.googleapis.com
